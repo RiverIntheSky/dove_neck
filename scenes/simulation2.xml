@@ -1,0 +1,53 @@
+<scene version="2.2.1">
+  <default name="spp" value="64"/>
+  <default name="res" value="720"/>
+
+  <integrator type="direct">
+    <integer name="emitter_samples" value="1"/>
+    <integer name="bsdf_samples" value="0"/>
+    <integer name="samples_per_pass" value="$spp"/>
+  </integrator>
+
+  <sensor type="bsdfvisualizer">
+    <film type="hdrfilm">
+      <integer name="width" value="$res"/>
+      <integer name="height" value="$res"/>
+      <string name="pixel_format" value="rgb"/>
+      <string name="component_format" value="float32"/>
+    </film>
+    <sampler type="ldsampler">
+      <integer name="sample_count" value="$spp"/>
+    </sampler>
+  </sensor>
+
+  <shape type="rectangle">
+    <bsdf type="barbulebsdfev" id="sb">
+      <string name="film_ior" value="keratin"/>
+      <string name="ext_ior" value="air"/>
+      <float name="height" value="0.58"/>
+      <float name="b" value="0.25"/>
+      <float name="phi_0" value="-0.37"/>
+      <float name="phi_1" value="2.64"/>
+      <float name="mu" value="-0.35"/>
+      <float name="H" value="1.25"/>
+    </bsdf>
+    <transform name="to_world">
+      <rotate y="1" angle="5"/>
+      <rotate x="1" angle="0"/>
+      <rotate z="1" angle="-52"/>
+    </transform>
+  </shape>
+
+  <!-- area light emitter -->
+  <shape type="disk">
+    <transform name="to_world">
+      <scale x="0.12" y="0.12" z="1"/>
+      <rotate y="1" angle="180"/>
+      <translate x="0" y="0" z="1"/>
+    </transform>
+    <emitter type="area">
+      <spectrum name="radiance" value="30"/>
+    </emitter>
+  </shape>
+
+</scene>
