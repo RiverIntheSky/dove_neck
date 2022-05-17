@@ -87,12 +87,6 @@ MTS_VARIANT Feather<Float, Spectrum>::Feather(const Properties &props):
     m_span = props.float_("span", 0.45f);
     m_roughness = props.vector3f("roughness", 0.f);
 
-    // TODO: sample in houdini and solve NaN
-    auto pmgr = PluginManager::instance();
-    Properties props_sampler("independent");
-    props_sampler.set_int("sample_count", 4);
-    m_sampler = static_cast<Sampler *>(pmgr->create_object<Sampler>(props_sampler));
-
     // update radius
     auto [S, Q, T] = transform_decompose(m_to_world.matrix, 25);
     radius *= S[0][0];
@@ -279,11 +273,6 @@ MTS_VARIANT Feather<Float, Spectrum>::Feather(const Properties &props):
 		uvw = vertex_texcoord(line[j]);
 	    }
 	    Mask active = true;
-	    Vector3f pertubation((*m_sampler).next_1d(active),
-				 (*m_sampler).next_1d(active),
-				 (*m_sampler).next_1d(active));
-	    pertubation = pertubation * 2.f - 1.f;
-	    pertubation *= m_roughness;
 	    if (j == 0) {
 		t1 = normalize(vertex_position(line[j + 1]) - vertex_position(line[j]));
 	    } else {
@@ -303,11 +292,11 @@ MTS_VARIANT Feather<Float, Spectrum>::Feather(const Properties &props):
 
 	    if (m_center) {
 		barb = new Barb<Float, Spectrum>(vertex_position(line[j + 1]), vertex_position(line[j]),
-						 n, t2, t1, uvw, pertubation, radius, m_cover * scale, m_span, props);
+						 n, t2, t1, uvw, radius, m_cover * scale, m_span, props);
 
 	    } else {
 		barb = new Barb<Float, Spectrum>(vertex_position(line[j + 1]) - n * radius, vertex_position(line[j]) - n * radius,
-						 n, t2, t1, uvw, pertubation, radius, m_cover * scale, m_span, props);
+						 n, t2, t1, uvw, radius, m_cover * scale, m_span, props);
  	    }
 	    m_kdtree->add_shape(barb);
 	}

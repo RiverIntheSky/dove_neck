@@ -161,7 +161,7 @@ public:
 	return {gamma_h0, gamma_h1, phi_h0, phi_h1};
     }
 
-    /* compute NDF given theta_h and gamma_h */    
+    /* compute NDF given theta_h and gamma_h */
     MTS_INLINE Float NDF(Float theta_h, Float phi_h, Float H) const {
 	auto [s, c] = sincos(phi_h);
 	Float D_phi = m_b2 / norm(m_H) * pow(sqr(s) + m_b2 * sqr(c), -1.5f);
@@ -180,9 +180,9 @@ public:
 	H *= 2.5f; // legacy
 	H = select(H == 0, m_H, H) + (si.dn_dv).x();
 	Float mu = (si.dn_du).y();
-	mu = select(mu == 0, m_mu, mu) + (si.dn_dv).y();
+	mu = select(mu == 0, m_mu, mu);
 	Float height = (si.dn_du).z();
-        height = select(height == 0, m_height, height) + (si.dn_dv).z();
+        height = select(height == 0, m_height, height);
 	return {H, mu, height};
     }
 

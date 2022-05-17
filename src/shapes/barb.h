@@ -59,8 +59,8 @@ public:
     }
 
     Barb(ScalarPoint3f e0, ScalarPoint3f e1, ScalarNormal3f n, ScalarVector3f t1, ScalarVector3f t2,
-	 ScalarVector3f uvw, ScalarVector3f roughness, float radius, float cover, float span, const Properties &props):
-	Base(props), m_t1(t1), m_t2(t2), m_uvw(uvw), m_roughness(roughness), m_cover(cover), m_span(span) {
+	 ScalarVector3f uvw, float radius, float cover, float span, const Properties &props):
+	Base(props), m_t1(t1), m_t2(t2), m_uvw(uvw), m_cover(cover), m_span(span) {
 	/// Are the sphere normals pointing inwards? default: no
 	m_flip_normals = props.bool_("flip_normals", false);
 
@@ -280,10 +280,10 @@ public:
 	Float theta = atan2(local.y(), local.x());
 
 	// TODO: scale
-	if ((theta - HalfPi) < -0.1f) {
+	if ((theta - HalfPi) < -HalfPi * 0.08f) {
 	    si.dp_du = Vector3f(-local.y(), local.x(), m_span_x);
 	    si.dp_dv = Vector3f(local.y(), -local.x(), m_span_y);
-	} else if ((theta - HalfPi) > 0.1f) {
+	} else if ((theta - HalfPi) > HalfPi * 0.08f) {
 	    si.dp_du = Vector3f(local.y(), -local.x(), m_span_x);
 	    si.dp_dv = Vector3f(local.y(), -local.x(), -m_span_y);
 	} else { /* ramus */
@@ -307,7 +307,6 @@ public:
 
 	// assume dn_du is not occupied, use it to store feather uv
 	si.dn_du = Vector3f(m_uvw.x(), -m_uvw.y(), m_uvw.z());
-	si.dn_dv = m_roughness;
 
 	return si;
     }
@@ -341,7 +340,7 @@ public:
     Float m_span_x, m_span_y;
     ScalarVector3f m_t1, m_t2;
     bool m_flip_normals;
-    ScalarVector3f m_uvw, m_roughness;
+    ScalarVector3f m_uvw;
     ScalarFloat m_cover, m_span, m_y_min, m_y_max, m_radius, m_length, m_theta_a_c, m_theta_e_c;   // circle
 };
 
