@@ -1,0 +1,85 @@
+<scene version='2.2.1'>
+  <default name="spp" value="256"/>
+  <default name="res" value="512"/>
+
+  <!-- linear light source -->
+  <shape type="obj">
+    <string name="filename" value="meshes/la$o0.obj"/>
+    <emitter type="area">
+      <spectrum name="radiance" value="50"/>
+    </emitter>
+  </shape>
+
+  <!-- <integrator type="path"/> -->
+  <integrator type="direct">
+    <integer name="emitter_samples" value="1"/>
+    <integer name="bsdf_samples" value="0"/>
+    <integer name="samples_per_pass" value="$spp"/>
+  </integrator>
+
+  <!-- camera -->
+  <sensor type="perspective">
+    <!-- <float name="near_clip" value="1"/> -->
+    <!-- <float name="far_clip" value="1000"/> -->
+    <float name="fov" value="42"/>
+    <string name="fov_axis" value="x"/>
+    <transform name="to_world">
+      <lookat target="0.0, 0.0, 0.0"
+              origin="0.0389, -0.0389, 0.0534"
+              up    ="0.0, 0.0, 1.0"/>
+    </transform>
+    <film type="hdrfilm">
+      <integer name="width" value="$res"/>
+      <integer name="height" value="$res"/>
+
+      <!-- due to Scheimpflug optics, the camera principle point is shifted up, which causes the
+	   bottom of the white border to be clipped for the simple pinhole camera we have in Mitsuba
+	   => render with bigger height and crop afterwards/-->
+
+      <string name="pixel_format" value="rgb"/>
+      <string name="component_format" value="float32"/>
+      <rfilter type="gaussian"/>
+    </film>
+    <sampler type="ldsampler">
+      <integer name="sample_count" value="$spp"/>
+    </sampler>
+  </sensor>
+
+  <bsdf type="barbulebsdf" id="dove">
+    <string name="film_ior" value="keratin"/>
+    <string name="ext_ior" value="air"/>
+    <float name="b" value="0.25"/>
+    <float name="mu" value="-0.35"/>
+  </bsdf>
+
+  <!-- feather -->
+  <shape type="feather">
+    <string name="filename" value="feathers/feather.ply"/>
+    <ref id="dove"/>
+    <float name="span" value="0.5"/>
+    <float name="radius" value="0.01"/>
+    <transform name="to_world">
+      <translate x="0" y="-0.005" z="0"/>
+      <rotate z="1" angle="-145"/>
+      <rotate x="1" y="-1" angle="-5"/>
+      <rotate x="1" y="1" angle="10"/>
+      <scale value="0.035"/>
+      <translate x="-0.002" y="0.002"/>
+      <translate z="0.0075"/>
+    </transform>
+  </shape>
+
+  <!-- backplate -->
+  <shape type="obj">
+    <string name="filename" value="meshes/backplate.obj"/>
+    <bsdf type="roughplastic">
+      <rgb name="diffuse_reflectance" value="0.132, 0.12, 0.12"/>
+      <rgb name="specular_reflectance" value="0.6, 0.55, 0.72"/>
+      <float name="alpha" value="0.15"/>
+    </bsdf>
+    <transform name="to_world">
+      <translate z="0.0175"/>
+    </transform>
+  </shape>
+
+</scene>
