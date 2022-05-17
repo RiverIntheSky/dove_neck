@@ -17,8 +17,9 @@ add_plugin(feather     feather.cpp)
 ```
 Then copy the current folder to the mitsuba folder, keeping the structure, then compile again.
 # Usage
-in the `build` folder, do `dist/mitsuba ../scenes/xxx.xml`
-for the sequence with linear light source, do
+in the `build` folder, do `dist/mitsuba ../scenes/xxx.xml`.
+
+For the sequence with linear area light source, do
 ```bash
 for o in -1 00 01 02 03 04 05 06
 do
