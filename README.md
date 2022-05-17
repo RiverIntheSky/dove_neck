@@ -1,7 +1,7 @@
 # Overview
 This repository includes the implementation of paper [**Rendering Iridescent Rock Dove Neck Feathers**](https://doi.org/10.1145/3528233.3530749) in [Mitsuba 2](https://mitsuba2.readthedocs.io/en/latest/index.html).
 # Instruction
-Copy the [Mitsuba 2](https://mitsuba2.readthedocs.io/en/latest/index.html) repository, then compile as instructed in the docs. The default variant is `scalar_spectral`.
+Clone the [Mitsuba 2](https://mitsuba2.readthedocs.io/en/latest/index.html) repository, copy the current folder to the repository, then compile as instructed in the docs. The default variant is `scalar_spectral`.
 Add these two lines to `src/bsdfs/CMakeLists.txt`:
 ```cmake
 add_plugin(barbulebsdfev        barbuleBsdfEval.cpp)
