@@ -27,4 +27,4 @@ do
 done
 ```
 # Note
-In Mitsuba 2, \omega_i denotes the camera ray and \omega_o the light ray. Therefore, when visualizing the BSDF, we use the `barbulebsdfev` plug-in, swapping \omega_i and \omega_o.
+In Mitsuba 2, $\omega_i$ denotes the camera ray and $\omega_o$ the light ray. Therefore, when visualizing the BSDF, we use the `barbulebsdfev` plug-in, swapping $\omega_i$ and $\omega_o$.
