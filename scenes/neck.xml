@@ -1,6 +1,6 @@
 <scene version='2.0.0'>
 
-  <default name="spp" value="64"/>
+  <default name="spp" value="256"/>
 
   <integrator type="path"/>
 
@@ -13,8 +13,8 @@
     </transform>
 
     <film type="hdrfilm">
-      <integer name="width" value="512"/>
-      <integer name="height" value="386"/>
+      <integer name="width" value="1024"/>
+      <integer name="height" value="768"/>
       <string name="pixel_format" value="rgb"/>
       <string name="component_format" value="float32"/>
       <rfilter type="gaussian"/>
