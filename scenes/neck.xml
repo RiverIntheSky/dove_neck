@@ -1,6 +1,6 @@
 <scene version='2.0.0'>
 
-  <default name="spp" value="256"/>
+  <default name="spp" value="64"/>
 
   <integrator type="path"/>
 
@@ -13,8 +13,8 @@
     </transform>
 
     <film type="hdrfilm">
-      <integer name="width" value="1024"/>
-      <integer name="height" value="768"/>
+      <integer name="width" value="512"/>
+      <integer name="height" value="386"/>
       <string name="pixel_format" value="rgb"/>
       <string name="component_format" value="float32"/>
       <rfilter type="gaussian"/>
@@ -26,8 +26,6 @@
   </sensor>
 
   <bsdf type="barbulebsdf" id="dove">
-    <string name="film_ior" value="keratin"/>
-    <string name="ext_ior" value="air"/>
     <float name="b" value="0.25"/>
     <float name="mu" value="-0.35"/>
   </bsdf>
@@ -35,9 +33,9 @@
   <!-- feather -->
   <shape type="feather">
     <string name="filename" value="feathers/feathers.ply"/>
-    <vector name="roughness" value="0, 0.07, 0.02"/>
     <ref id="dove"/>
-    <float name="radius" value="0.01"/>
+    <float name="barbwidth" value="0.015"/>
+    <float name="ramuswidth" value="0.00063"/>
     <transform name="to_world">
       <scale value="0.1"/>
       <translate x="0.08"/>

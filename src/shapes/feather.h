@@ -138,7 +138,6 @@ public:
     MTS_DECLARE_CLASS()
 private:
     ref<Sampler> m_sampler;
-    bool m_center;
     float m_cover, m_span;
     Vector3f m_roughness;
     ScalarSize m_vertex_count = 0;

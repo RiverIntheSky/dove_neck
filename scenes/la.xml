@@ -56,8 +56,6 @@
   <shape type="feather">
     <string name="filename" value="feathers/feather.ply"/>
     <ref id="dove"/>
-    <float name="span" value="0.5"/>
-    <float name="radius" value="0.01"/>
     <transform name="to_world">
       <translate x="0" y="-0.005" z="0"/>
       <rotate z="1" angle="-145"/>

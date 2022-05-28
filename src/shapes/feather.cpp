@@ -30,62 +30,47 @@ Feather (:monosp:`feather`)
  * - filename
    - |string|
    - The .ply file that stores the feather geometry
- * - radius
+ * - barbwidth
    - |float|
-   - Radius of the barbule in object-space units (Default: 0.04)
- * - scale
+   - width of the barb in object-space units (Default: 0.04)
+   - ramuswidth
    - |float|
-   - the portion of the underlying cylinder
+   - diameter of the ramus
+ * - cover
+   - |float|
+   - half of the opening angle of the barb in the embedded cylinder geometry.
  * - span
    - |float|
-   - the angle between the barbule y axis and the barb axis
- * - flip_normals
-   - |bool|
-   -  Is the barbule inverted, i.e. should the normal vectors
-      be flipped? (Default: |false|, i.e. the normals point outside)
+   - the angle between the barbule axis and the barb axis
  * - to_world
    - |transform|
    - Specifies an optional linear object-to-world transformation. Note that non-uniform scales are
    not permitted! (Default: none, i.e. object space = world space)
 
-   This shape plugin describes a feather shape with barbule primitives.
-   Note that the feather does not have endcaps -- also,
-   its normals point outward, which means that the inside will be treated
-   as fully absorbing by most material models. If this is not
-   desirable, consider using the :ref:`twosided <bsdf-twosided>` plugin.
+   This shape plugin describes a feather shape with barb primitives.
+   The barb is tapered at the tip.
 
-   A simple example for instantiating a barbule, whose interior is visible:
+   A simple example for instantiating a feather
 
    .. code-block:: xml
 
-   <shape type="feather">
-   <string name="filename" value="feathers/barbule_straight.ply"/>
-   <float name="radius" value="0.02"/>
-   <bsdf type="irid">
-   <string name="int_ior" value="air"/>
-   <string name="film_ior" value="keratin"/>
-   <string name="ext_ior" value="air"/>
-   <float name="height" value="595.0"/>
-   <string name="distribution" value="ggx"/>
-   <float name="alpha_u" value="0.01"/>
-   <float name="alpha_v" value="0.01"/>
-   </bsdf>
-   <ref id="melanin" name="interior"/>
-   <transform name="to_world">
-   <rotate y="1" angle="0"/>
-   </transform>
-   </shape>
+  <shape type="feather">
+      <string name="filename" value="feathers.ply"/>
+      <bsdf type="barbulebsdf"/>
+      <float name="barbwidth" value="0.007"/>
+  </shape>
 */
 
 
 MTS_VARIANT Feather<Float, Spectrum>::Feather(const Properties &props):
     Shape<Float, Spectrum>(props) {
     m_kdtree = new ShapeKDTree(props);
-    float radius = props.float_("radius", 0.5f);
+    float barb_width = props.float_("barbwidth", 0.015f);
+    float ramus_width = props.float_("ramuswidth", 0.00063f);
     m_cover = props.float_("cover", 0.78f);
-    m_center = props.bool_("center", false);
+    float radius = barb_width * 0.5f / sin(m_cover);
+    float ramus_arc = asin(ramus_width * 0.5f / radius);
     m_span = props.float_("span", 0.45f);
-    m_roughness = props.vector3f("roughness", 0.f);
 
     // update radius
     auto [S, Q, T] = transform_decompose(m_to_world.matrix, 25);
@@ -268,11 +253,12 @@ MTS_VARIANT Feather<Float, Spectrum>::Feather(const Properties &props):
 	for (ScalarSize j = 0; j < SEGNUM - 1; ++j) {
 	    ScalarNormal3f n = vertex_normal(line[j]);
 	    ScalarVector3f t1, t2;
-	    ScalarVector3f uvw(0.f);
+	    ScalarVector3f uvw(0.5f, 0.35f, 0.65f);
 	    if (has_vertex_texcoords) {
 		uvw = vertex_texcoord(line[j]);
 	    }
-	    Mask active = true;
+	    // miter joint
+	    // assuming barbule segments have equal lengths
 	    if (j == 0) {
 		t1 = normalize(vertex_position(line[j + 1]) - vertex_position(line[j]));
 	    } else {
@@ -284,20 +270,13 @@ MTS_VARIANT Feather<Float, Spectrum>::Feather(const Properties &props):
 		t2 = normalize(vertex_position(line[j + 2]) - vertex_position(line[j]));
 	    }
 	    ref<Barb<Float, Spectrum>> barb;
-	    // barb is thinner at the end
+	    // tapering at barb tip
 	    float curve_x = (j + 0.5) / SEGNUM;
 	    float scale = 1.f;
 	    if (curve_x > 0.6f)
 		scale -= 5.f * sqr(curve_x - 0.6f);
-
-	    if (m_center) {
-		barb = new Barb<Float, Spectrum>(vertex_position(line[j + 1]), vertex_position(line[j]),
-						 n, t2, t1, uvw, radius, m_cover * scale, m_span, props);
-
-	    } else {
-		barb = new Barb<Float, Spectrum>(vertex_position(line[j + 1]) - n * radius, vertex_position(line[j]) - n * radius,
-						 n, t2, t1, uvw, radius, m_cover * scale, m_span, props);
- 	    }
+	    barb = new Barb<Float, Spectrum>(vertex_position(line[j + 1]), vertex_position(line[j]),
+					     n, t2, t1, uvw, radius * scale, m_cover, m_span, ramus_arc, props);
 	    m_kdtree->add_shape(barb);
 	}
     }
